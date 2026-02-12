@@ -9,9 +9,10 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 interface LiveFeedProps {
     initialReports: Report[];
     userRole?: "citizen" | "volunteer" | "admin";
+    userId?: string;
 }
 
-export function LiveFeed({ initialReports, userRole = "citizen" }: LiveFeedProps) {
+export function LiveFeed({ initialReports, userRole = "citizen", userId }: LiveFeedProps) {
     const [filter, setFilter] = useState("all");
 
     const filteredReports = initialReports.filter(report => {
@@ -37,7 +38,7 @@ export function LiveFeed({ initialReports, userRole = "citizen" }: LiveFeedProps
             <ScrollArea className="flex-1 p-4">
                 <div className="space-y-4">
                     {filteredReports.map((report) => (
-                        <ReportCard key={report.id} report={report} userRole={userRole} />
+                        <ReportCard key={report.id} report={report} userRole={userRole} userId={userId} />
                     ))}
                     {filteredReports.length === 0 && (
                         <div className="text-center py-12 text-muted-foreground">

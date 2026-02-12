@@ -44,7 +44,7 @@ export default async function CommandCenterPage() {
                         📡 Flux SOS en direct
                         <span className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">{allReports.length}</span>
                     </h2>
-                    <LiveFeed initialReports={allReports} userRole={session.user.role as "admin" | "volunteer"} />
+                    <LiveFeed initialReports={allReports} userRole={session.user.role as "admin" | "volunteer"} userId={session.user.id} />
                 </div>
 
                 {/* Side Panel - 1/3 width */}

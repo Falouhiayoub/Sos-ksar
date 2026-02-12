@@ -38,6 +38,11 @@ export function Navbar() {
                     Command Center
                 </Link>
             )}
+            {session && session.user.role === "admin" && (
+                <Link href="/admin/users" className={`text-sm font-medium transition-colors hover:text-primary ${isActive("/admin/users") ? "text-foreground" : "text-muted-foreground"}`} onClick={() => setIsOpen(false)}>
+                    Utilisateurs
+                </Link>
+            )}
         </>
     );
 
@@ -79,6 +84,11 @@ export function Navbar() {
                                 {(session.user.role === "admin" || session.user.role === "volunteer") && (
                                     <DropdownMenuItem asChild>
                                         <Link href="/command">Centre de Commande</Link>
+                                    </DropdownMenuItem>
+                                )}
+                                {session.user.role === "admin" && (
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/admin/users">Gestion Utilisateurs</Link>
                                     </DropdownMenuItem>
                                 )}
                                 <DropdownMenuSeparator />

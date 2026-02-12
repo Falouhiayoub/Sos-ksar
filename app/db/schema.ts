@@ -78,6 +78,8 @@ export const reports = pgTable("reports", {
     userId: text("userId")
         .notNull()
         .references(() => user.id),
+    assignedTo: text("assignedTo")
+        .references(() => user.id), // Volunteer ID
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().notNull(), // Should be updated manually or via triggers
 });

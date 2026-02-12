@@ -8,7 +8,6 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { nanoid } from "nanoid";
 import { eq } from "drizzle-orm";
-import { redirect } from "next/navigation";
 
 export async function createReport(data: unknown) {
     const session = await auth.api.getSession({
@@ -74,5 +73,33 @@ export async function updateReportStatus(data: unknown) {
     } catch (error) {
         console.error("Failed to update status:", error);
         return { error: "Failed to update status" };
+    }
+}
+
+export async function assignVolunteer(reportId: string, volunteerId: string) {
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
+
+    if (!session || (session.user.role !== "admin" && session.user.role !== "volunteer")) {
+        return { error: "Unauthorized" };
+    }
+
+    // Volunteers can only assign themselves.
+    if (session.user.role === "volunteer" && volunteerId !== session.user.id) {
+        // @ts-ignore
+        return { error: "Volunteers can only assign themselves." };
+    }
+
+    try {
+        await db.update(reports)
+            .set({ assignedTo: volunteerId })
+            .where(eq(reports.id, reportId));
+
+        revalidatePath("/command");
+        return { success: true };
+    } catch (error) {
+        console.error("Failed to assign volunteer:", error);
+        return { error: "Failed to assign volunteer" };
     }
 }

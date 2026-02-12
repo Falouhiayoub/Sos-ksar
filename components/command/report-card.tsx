@@ -5,17 +5,20 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { updateReportStatus } from "@/app/actions/report-actions";
+import { updateReportStatus, assignVolunteer } from "@/app/actions/report-actions";
 import { toast } from "sonner";
-import { MapPin, AlertTriangle, Clock, CheckCircle } from "lucide-react";
+import { MapPin, Clock, UserCheck } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 
 interface ReportCardProps {
     report: Report;
+    userRole?: "citizen" | "volunteer" | "admin";
+    userId?: string;
 }
 
-export function ReportCard({ report }: ReportCardProps) {
+export function ReportCard({ report, userRole = "citizen", userId }: ReportCardProps) {
+    const canUpdateStatus = userRole === "admin" || userRole === "volunteer";
 
     const handleStatusChange = async (newStatus: string) => {
         const result = await updateReportStatus({
@@ -26,7 +29,30 @@ export function ReportCard({ report }: ReportCardProps) {
         if (result.success) {
             toast.success("Statut mis à jour");
         } else {
-            toast.error("Erreur lors de la mise à jour");
+            // @ts-ignore
+            toast.error(result.error?.status?._errors?.[0] || "Erreur lors de la mise à jour");
+        }
+    };
+
+    const handleAssign = async () => {
+        if (!userId) return;
+        const result = await assignVolunteer(report.id, userId);
+        if (result.success) {
+            toast.success("Vous avez pris en charge ce signalement");
+        } else {
+            toast.error(result.error || "Erreur lors de l'assignation");
+        }
+    };
+
+    const handleDelete = async () => {
+        if (confirm("Êtes-vous sûr de vouloir supprimer ce signalement ?")) {
+            const { deleteReport } = await import("@/app/actions/admin-actions");
+            const result = await deleteReport(report.id);
+            if (result.success) {
+                toast.success("Signalement supprimé");
+            } else {
+                toast.error(result.error || "Erreur lors de la suppression");
+            }
         }
     };
 
@@ -76,18 +102,50 @@ export function ReportCard({ report }: ReportCardProps) {
                     {report.description}
                 </div>
             </CardContent>
-            <CardFooter className="flex justify-end gap-2 pt-2">
-                <Select defaultValue={report.status} onValueChange={handleStatusChange}>
-                    <SelectTrigger className="w-[140px] h-8 text-xs">
-                        <SelectValue placeholder="Changer statut" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="pending">En attente</SelectItem>
-                        <SelectItem value="in_progress">En cours</SelectItem>
-                        <SelectItem value="resolved">Résolu</SelectItem>
-                    </SelectContent>
-                </Select>
-            </CardFooter>
+
+            {canUpdateStatus && (
+                <CardFooter className="flex flex-col gap-2 pt-2 items-end border-t mt-4 pt-4">
+                    <div className="flex gap-2 w-full justify-end items-center">
+                        {report.assignedTo ? (
+                            <Badge variant="outline" className="border-orange-200 text-orange-700 bg-orange-50 gap-1">
+                                <UserCheck className="w-3 h-3" />
+                                Pris en charge
+                            </Badge>
+                        ) : (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 text-xs border-orange-200 text-orange-600 hover:bg-orange-50 hover:text-orange-700 hover:border-orange-300 transition-colors"
+                                onClick={handleAssign}
+                            >
+                                Prendre en charge
+                            </Button>
+                        )}
+
+                        <Select defaultValue={report.status} onValueChange={handleStatusChange}>
+                            <SelectTrigger className="w-[130px] h-8 text-xs">
+                                <SelectValue placeholder="Statut" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="pending">En attente</SelectItem>
+                                <SelectItem value="in_progress">En cours</SelectItem>
+                                <SelectItem value="resolved">Résolu</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {userRole === "admin" && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 text-xs text-red-500 hover:text-red-700 hover:bg-red-50 w-full"
+                            onClick={handleDelete}
+                        >
+                            Supprimer ce signalement
+                        </Button>
+                    )}
+                </CardFooter>
+            )}
         </Card>
     );
 }
