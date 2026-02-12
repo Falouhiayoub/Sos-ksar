@@ -18,8 +18,14 @@ export const switchRole = async (newRole: UserRole) => {
         throw new Error("Unauthorized");
     }
 
+    if (process.env.NODE_ENV !== "development") {
+        throw new Error("Dev tools are only available in development mode");
+    }
+
+    /*
     // In a real production app, you might want to restrict this further
     // e.g. if (process.env.NODE_ENV !== 'development' && currentUser.role !== 'admin') ...
+    */
 
     await db
         .update(user)
