@@ -23,7 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Loader2, Send } from "lucide-react";
+import { Loader2, Send, Heart, Utensils, LifeBuoy, MapPin, FileText, AlertCircle } from "lucide-react";
 
 // Schéma de validation
 const reportSchema = z.object({
@@ -68,19 +68,21 @@ export function ReportForm() {
 
     if (isSuccess) {
         return (
-            <Card className="max-w-md mx-auto shadow-md border-zinc-100 rounded-xl overflow-hidden animate-in fade-in zoom-in duration-300">
-                <CardContent className="pt-12 pb-12 flex flex-col items-center text-center space-y-4">
-                    <div className="w-16 h-16 bg-[#2F9BA6]/10 rounded-full flex items-center justify-center">
-                        <Send className="w-8 h-8 text-[#2F9BA6]" />
+            <Card className="max-w-md mx-auto shadow-2xl border-[#778DA9]/20 rounded-2xl overflow-hidden animate-in fade-in zoom-in duration-300 bg-gradient-to-br from-white to-[#E0E1DD]/30">
+                <CardContent className="pt-12 pb-12 flex flex-col items-center text-center space-y-6">
+                    <div className="relative">
+                        <div className="absolute inset-0 bg-[#A67C52] rounded-full blur-xl opacity-30 animate-pulse" />
+                        <div className="relative w-20 h-20 bg-gradient-to-br from-[#A67C52] to-[#778DA9] rounded-full flex items-center justify-center shadow-xl">
+                            <Send className="w-10 h-10 text-white" />
+                        </div>
                     </div>
-                    <CardTitle className="text-2xl font-bold text-[#2F9BA6]">Merci !</CardTitle>
-                    <p className="text-zinc-600">
+                    <CardTitle className="text-3xl font-black text-[#1B263B]">Merci !</CardTitle>
+                    <p className="text-[#778DA9] text-lg leading-relaxed max-w-sm">
                         Votre signalement SOS a été envoyé avec succès. Une équipe sera prévenue sous peu.
                     </p>
                     <Button
                         onClick={() => setIsSuccess(false)}
-                        variant="outline"
-                        className="mt-4 rounded-xl hover:scale-105 transition-transform"
+                        className="mt-4 rounded-xl bg-[#A67C52] hover:bg-[#E85D04] text-white font-bold shadow-lg hover:scale-105 transition-all px-6"
                     >
                         Signaler un autre besoin
                     </Button>
@@ -90,66 +92,112 @@ export function ReportForm() {
     }
 
     return (
-        <Card className="max-w-md mx-auto shadow-md border-zinc-100 rounded-xl overflow-hidden">
-            <CardHeader className="bg-[#EB2411] text-white p-6">
-                <CardTitle className="text-2xl font-bold">Signaler un SOS</CardTitle>
-                <CardDescription className="text-white/80">
-                    Veuillez remplir les informations ci-dessous pour demander de l'aide.
-                </CardDescription>
+        <Card className="max-w-md mx-auto shadow-2xl border-[#778DA9]/20 rounded-2xl overflow-hidden bg-white">
+            <CardHeader className="bg-gradient-to-r from-[#1B263B] to-[#0D1B2A] text-white p-8 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#E85D04]/10 rounded-full blur-3xl" />
+                <div className="relative flex items-center space-x-3">
+                    <div className="w-12 h-12 bg-[#E85D04]/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                        <AlertCircle className="w-6 h-6 text-[#E85D04]" />
+                    </div>
+                    <div>
+                        <CardTitle className="text-2xl font-black">Signaler un SOS</CardTitle>
+                        <CardDescription className="text-[#E0E1DD]/80 mt-1">
+                            Remplissez les informations pour demander de l'aide
+                        </CardDescription>
+                    </div>
+                </div>
             </CardHeader>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-                <CardContent className="p-8 space-y-6">
-                    <div className="space-y-2">
-                        <Label htmlFor="type" className="text-sm font-medium text-zinc-700">Type d'urgence</Label>
+                <CardContent className="p-8 space-y-6 bg-gradient-to-b from-white to-[#E0E1DD]/10">
+                    {/* Type d'urgence */}
+                    <div className="space-y-3">
+                        <Label htmlFor="type" className="text-sm font-bold text-[#1B263B] flex items-center">
+                            <LifeBuoy className="w-4 h-4 mr-2 text-[#778DA9]" />
+                            Type d'urgence
+                        </Label>
                         <Select
                             onValueChange={(value) => setValue("type", value as any)}
                             defaultValue={selectedType}
                         >
-                            <SelectTrigger id="type" className="rounded-lg border-zinc-200 focus:ring-[#2F9BA6] focus:border-[#2F9BA6]">
+                            <SelectTrigger
+                                id="type"
+                                className="rounded-xl border-[#778DA9]/30 bg-[#E0E1DD]/20 focus:ring-2 focus:ring-[#A67C52] focus:border-[#A67C52] h-12 font-medium text-[#1B263B] shadow-sm hover:shadow-md transition-all"
+                            >
                                 <SelectValue placeholder="Choisir un type" />
                             </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="medical">🚑 Médical</SelectItem>
-                                <SelectItem value="food">🍱 Nourriture</SelectItem>
-                                <SelectItem value="rescue">🆘 Secours / Sauvetage</SelectItem>
+                            <SelectContent className="rounded-xl border-[#778DA9]/30">
+                                <SelectItem value="medical" className="font-medium">
+                                    <div className="flex items-center">
+                                        <Heart className="w-4 h-4 mr-2 text-[#E85D04]" />
+                                        Médical
+                                    </div>
+                                </SelectItem>
+                                <SelectItem value="food" className="font-medium">
+                                    <div className="flex items-center">
+                                        <Utensils className="w-4 h-4 mr-2 text-[#A67C52]" />
+                                        Nourriture
+                                    </div>
+                                </SelectItem>
+                                <SelectItem value="rescue" className="font-medium">
+                                    <div className="flex items-center">
+                                        <LifeBuoy className="w-4 h-4 mr-2 text-[#778DA9]" />
+                                        Secours / Sauvetage
+                                    </div>
+                                </SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="location" className="text-sm font-medium text-zinc-700">Localisation</Label>
+                    {/* Localisation */}
+                    <div className="space-y-3">
+                        <Label htmlFor="location" className="text-sm font-bold text-[#1B263B] flex items-center">
+                            <MapPin className="w-4 h-4 mr-2 text-[#778DA9]" />
+                            Localisation
+                        </Label>
                         <Input
                             id="location"
                             placeholder="Ex: Quartier El Ksar, Rue 4..."
                             {...register("location")}
-                            className={`rounded-lg border-zinc-200 focus:ring-[#2F9BA6] focus:border-[#2F9BA6] ${errors.location ? "border-red-500" : ""}`}
+                            className={`rounded-xl border-[#778DA9]/30 bg-[#E0E1DD]/20 focus:ring-2 focus:ring-[#A67C52] focus:border-[#A67C52] h-12 font-medium text-[#1B263B] placeholder:text-[#778DA9]/50 shadow-sm hover:shadow-md transition-all ${errors.location ? "border-[#E85D04] focus:ring-[#E85D04]" : ""
+                                }`}
                         />
                         {errors.location && (
-                            <p className="text-xs text-red-500 font-medium">{errors.location.message}</p>
+                            <div className="flex items-center space-x-1">
+                                <AlertCircle className="w-3 h-3 text-[#E85D04]" />
+                                <p className="text-xs text-[#E85D04] font-semibold">{errors.location.message}</p>
+                            </div>
                         )}
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="description" className="text-sm font-medium text-zinc-700">Description</Label>
+                    {/* Description */}
+                    <div className="space-y-3">
+                        <Label htmlFor="description" className="text-sm font-bold text-[#1B263B] flex items-center">
+                            <FileText className="w-4 h-4 mr-2 text-[#778DA9]" />
+                            Description
+                        </Label>
                         <Textarea
                             id="description"
                             placeholder="Décrivez brièvement la situation..."
                             {...register("description")}
                             rows={4}
-                            className={`rounded-lg border-zinc-200 focus:ring-[#2F9BA6] focus:border-[#2F9BA6] resize-none ${errors.description ? "border-red-500" : ""}`}
+                            className={`rounded-xl border-[#778DA9]/30 bg-[#E0E1DD]/20 focus:ring-2 focus:ring-[#A67C52] focus:border-[#A67C52] resize-none font-medium text-[#1B263B] placeholder:text-[#778DA9]/50 shadow-sm hover:shadow-md transition-all ${errors.description ? "border-[#E85D04] focus:ring-[#E85D04]" : ""
+                                }`}
                         />
                         {errors.description && (
-                            <p className="text-xs text-red-500 font-medium">{errors.description.message}</p>
+                            <div className="flex items-center space-x-1">
+                                <AlertCircle className="w-3 h-3 text-[#E85D04]" />
+                                <p className="text-xs text-[#E85D04] font-semibold">{errors.description.message}</p>
+                            </div>
                         )}
                     </div>
                 </CardContent>
 
-                <CardFooter className="p-8 pt-0">
+                <CardFooter className="p-8 pt-0 bg-gradient-to-b from-[#E0E1DD]/10 to-white">
                     <Button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full h-12 text-lg font-bold bg-[#EB2411] hover:bg-[#D4AF37] text-white rounded-xl shadow-lg transition-all hover:scale-105 active:scale-95 disabled:opacity-70"
+                        className="w-full h-14 text-lg font-black bg-gradient-to-r from-[#A67C52] to-[#778DA9] hover:from-[#E85D04] hover:to-[#A67C52] text-white rounded-xl shadow-xl transition-all hover:scale-105 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
                         {isSubmitting ? (
                             <>
@@ -157,7 +205,10 @@ export function ReportForm() {
                                 Envoi en cours...
                             </>
                         ) : (
-                            "Envoyer l'alerte SOS"
+                            <>
+                                <Send className="mr-2 h-5 w-5" />
+                                Envoyer l'alerte SOS
+                            </>
                         )}
                     </Button>
                 </CardFooter>
