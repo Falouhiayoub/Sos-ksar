@@ -1,7 +1,9 @@
 import { pgTable, text, timestamp, boolean, pgEnum } from "drizzle-orm/pg-core";
 
-// 1. Enum for Roles
+// 1. Enums
 export const rolesEnum = pgEnum("roles", ["citizen", "volunteer", "admin"]);
+export const priorityEnum = pgEnum("priority", ["low", "medium", "high", "emergency"]);
+export const reportStatusEnum = pgEnum("report_status", ["pending", "dispatched", "resolved", "cancelled"]);
 
 // 2. User Table with Role
 export const user = pgTable("user", {
@@ -13,6 +15,21 @@ export const user = pgTable("user", {
     createdAt: timestamp("createdAt").defaultNow().notNull(),
     updatedAt: timestamp("updatedAt").defaultNow().notNull(),
     role: rolesEnum("role").default("citizen").notNull(),
+});
+
+// 2b. Reports Table
+export const reports = pgTable("reports", {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    reporterId: text("reporter_id").notNull().references(() => user.id),
+    description: text("description").notNull(),
+    category: text("category").notNull(),
+    status: reportStatusEnum("status").default("pending").notNull(),
+    priority: priorityEnum("priority").default("medium").notNull(),
+    latitude: text("latitude").notNull(),
+    longitude: text("longitude").notNull(),
+    address: text("address"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 // 3. Session Table (Better Auth)
@@ -58,5 +75,4 @@ export const verification = pgTable("verification", {
     updatedAt: timestamp("updatedAt").defaultNow(),
 });
 
-// Type Inference
-export type UserRole = "citizen" | "volunteer" | "admin";
+
