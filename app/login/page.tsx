@@ -33,9 +33,10 @@ export default function LoginPage() {
                 }, {
                     onSuccess: () => {
                         toast.success("Account created successfully!");
-                        router.push("/");
+                        setIsSignUp(false);
                     },
                     onError: (ctx) => {
+                        console.error("Auth error:", ctx.error);
                         toast.error(ctx.error.message);
                     }
                 });
