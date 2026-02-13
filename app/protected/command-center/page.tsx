@@ -1,4 +1,5 @@
 import { AdminReportsTable } from "@/app/features/reports/components/admin-reports-table";
+import { InventoryWidget } from "@/app/features/inventory/components/inventory-widget";
 
 export default function CommandCenterPage() {
     return (
@@ -13,8 +14,12 @@ export default function CommandCenterPage() {
                     </p>
                 </header>
 
-                <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 mb-8">
                     <AdminReportsTable />
+                </section>
+
+                <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
+                    <InventoryWidget />
                 </section>
             </div>
         </div>

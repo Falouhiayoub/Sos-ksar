@@ -102,15 +102,16 @@ export const reports = pgTable("reports", {
     updatedAt: timestamp("updatedAt").defaultNow().notNull(), // Should be updated manually or via triggers
 });
 
-// 8. Inventory Table
+// 6. Inventory Table
 export const inventory = pgTable("inventory", {
-    id: text("id").primaryKey(),
-    name: text("name").notNull(),
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    itemName: text("item_name").notNull(),
     category: text("category").notNull(),
-    quantity: integer("quantity").notNull(),
-    status: inventoryStatusEnum("status").default("available").notNull(),
-    lastUpdated: timestamp("last_updated").defaultNow().notNull(),
+    stockLevel: text("stock_level").notNull(), // Using text to allow for units like "10 kg", "5 units" etc or just numbers
+    unit: text("unit").notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export type Report = typeof reports.$inferSelect;
-export type Inventory = typeof inventory.$inferSelect;
+// Type Inference
+export type UserRole = "citizen" | "volunteer" | "admin";
+export type InventoryItem = typeof inventory.$inferSelect;
