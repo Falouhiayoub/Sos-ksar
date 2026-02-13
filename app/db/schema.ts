@@ -75,4 +75,16 @@ export const verification = pgTable("verification", {
     updatedAt: timestamp("updatedAt").defaultNow(),
 });
 
+// 6. Inventory Table
+export const inventory = pgTable("inventory", {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    itemName: text("item_name").notNull(),
+    category: text("category").notNull(),
+    stockLevel: text("stock_level").notNull(), // Using text to allow for units like "10 kg", "5 units" etc or just numbers
+    unit: text("unit").notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
 
+// Type Inference
+export type UserRole = "citizen" | "volunteer" | "admin";
+export type InventoryItem = typeof inventory.$inferSelect;
