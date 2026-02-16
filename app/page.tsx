@@ -6,10 +6,19 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative flex-1 flex flex-col items-center justify-center text-center p-6 min-h-[80vh] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white overflow-hidden">
-        {/* Background Effects */}
-        <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1454789476662-bddc4f440263?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center mix-blend-overlay"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
+      <section className="relative flex-1 flex flex-col items-center justify-center text-center p-6 min-h-[80vh] text-white overflow-hidden">
+        {/* Background Image with Blur */}
+        <div
+          className="absolute inset-0 bg-[url('/image.jpg')] bg-cover bg-center transition-all duration-700"
+          style={{
+            filter: 'blur(1px) brightness(2)',
+            transform: 'scale(1)' // Prevent white edges from blur
+          }}
+        ></div>
+
+        {/* Overlays for depth and readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-slate-900/60"></div>
+        <div className="absolute inset-0 bg-black/20"></div>
 
         <div className="relative z-10 max-w-4xl space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium mb-4">
