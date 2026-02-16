@@ -1,18 +1,35 @@
-import { pgTable, text, timestamp, boolean, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, pgEnum, integer } from "drizzle-orm/pg-core";
 
-// 1. Enum for Roles
+// 1. Enums
 export const rolesEnum = pgEnum("roles", ["citizen", "volunteer", "admin"]);
+export const priorityEnum = pgEnum("priority", ["low", "medium", "high", "emergency"]);
+export const reportStatusEnum = pgEnum("report_status", ["pending", "dispatched", "resolved", "cancelled"]);
 
 // 2. User Table with Role
 export const user = pgTable("user", {
     id: text("id").primaryKey(),
     name: text("name").notNull(),
     email: text("email").notNull().unique(),
-    emailVerified: boolean("emailVerified").notNull().default(false),
+    emailVerified: boolean("emailVerified").notNull(),
     image: text("image"),
-    createdAt: timestamp("createdAt").defaultNow().notNull(),
-    updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+    createdAt: timestamp("createdAt").notNull(),
+    updatedAt: timestamp("updatedAt").notNull(),
     role: rolesEnum("role").default("citizen").notNull(),
+});
+
+// 2b. Reports Table
+export const reports = pgTable("reports", {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    reporterId: text("reporter_id").notNull().references(() => user.id),
+    description: text("description").notNull(),
+    category: text("category").notNull(),
+    status: reportStatusEnum("status").default("pending").notNull(),
+    priority: priorityEnum("priority").default("medium").notNull(),
+    latitude: text("latitude").notNull(),
+    longitude: text("longitude").notNull(),
+    address: text("address"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 // 3. Session Table (Better Auth)
@@ -44,8 +61,8 @@ export const account = pgTable("account", {
     refreshTokenExpiresAt: timestamp("refreshTokenExpiresAt"),
     scope: text("scope"),
     password: text("password"),
-    createdAt: text("createdAt"),
-    updatedAt: timestamp("updatedAt").defaultNow().notNull(),
+    createdAt: timestamp("createdAt").notNull(),
+    updatedAt: timestamp("updatedAt").notNull(),
 });
 
 // 5. Verification Table (Better Auth - Email/Magic Link)
@@ -54,9 +71,47 @@ export const verification = pgTable("verification", {
     identifier: text("identifier").notNull(),
     value: text("value").notNull(),
     expiresAt: timestamp("expiresAt").notNull(),
-    createdAt: timestamp("createdAt").defaultNow(),
-    updatedAt: timestamp("updatedAt").defaultNow(),
+    createdAt: timestamp("createdAt"),
+    updatedAt: timestamp("updatedAt"),
+});
+
+
+// Type Inference
+export type UserRole = "citizen" | "volunteer" | "admin";
+
+// 6. Enums for Reports & Inventory
+export const reportTypeEnum = pgEnum("report_type", ["medical", "security", "resource", "other"]);
+export const reportStatusEnum = pgEnum("report_status", ["pending", "in_progress", "resolved"]);
+export const reportPriorityEnum = pgEnum("report_priority", ["low", "medium", "high", "critical"]);
+export const inventoryStatusEnum = pgEnum("inventory_status", ["available", "low", "out_of_stock"]);
+
+// 7. Reports Table
+export const reports = pgTable("reports", {
+    id: text("id").primaryKey(),
+    type: reportTypeEnum("type").notNull(),
+    status: reportStatusEnum("status").default("pending").notNull(),
+    priority: reportPriorityEnum("priority").default("medium").notNull(),
+    location: text("location").notNull(),
+    description: text("description").notNull(),
+    userId: text("userId")
+        .notNull()
+        .references(() => user.id),
+    assignedTo: text("assignedTo")
+        .references(() => user.id), // Volunteer ID
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().notNull(), // Should be updated manually or via triggers
+});
+
+// 6. Inventory Table
+export const inventory = pgTable("inventory", {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    itemName: text("item_name").notNull(),
+    category: text("category").notNull(),
+    stockLevel: text("stock_level").notNull(), // Using text to allow for units like "10 kg", "5 units" etc or just numbers
+    unit: text("unit").notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 // Type Inference
 export type UserRole = "citizen" | "volunteer" | "admin";
+export type InventoryItem = typeof inventory.$inferSelect;
