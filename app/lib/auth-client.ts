@@ -1,9 +1,12 @@
-
 import { createAuthClient } from "better-auth/react";
-import { type auth } from "./auth"; // Import type from server
+import { inferAdditionalFields } from "better-auth/client/plugins";
+import type { auth } from "./auth";
 
-export const authClient = createAuthClient<typeof auth>({
+export const authClient = createAuthClient({
     baseURL: process.env.NEXT_PUBLIC_APP_URL || (typeof window !== "undefined" ? window.location.origin : undefined),
+    plugins: [
+        inferAdditionalFields<typeof auth>()
+    ]
 });
 
-export const { useSession, useListSessions, signIn, signOut, signUp } = authClient;
+export const { useSession, signIn, signOut, signUp } = authClient;

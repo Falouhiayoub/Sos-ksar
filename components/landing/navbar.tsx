@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 
 export function Navbar() {
     const { data: session } = authClient.useSession();
+    const router = useRouter();
 
     const handleSignOut = async () => {
         await authClient.signOut({
